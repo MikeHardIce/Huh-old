@@ -2,11 +2,11 @@ using System.Collections.Generic;
 
 namespace Huh.Core.Steps 
 {
-    public interface IStepManager 
+    public interface IStepManager<T> where T : IStepInformation
     {
-        void Register (IStepInformation stepInfo);
+        void Register (T stepInfo);
 
-        IList<IStepInformation> GetBy (string keyword); 
+        IList<T> GetStepsFor (string keyword); 
         
     }
 }

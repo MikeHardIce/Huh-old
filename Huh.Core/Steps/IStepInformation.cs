@@ -4,7 +4,7 @@ namespace Huh.Core.Steps
 {
     public interface IStepInformation
     {
-        string Name { get; }
+        string Keyword { get; }
 
         int ExecutionOrder { get; }
         

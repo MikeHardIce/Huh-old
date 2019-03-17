@@ -8,7 +8,7 @@ namespace Huh.Engine.Test
         [Fact]
         public void Test1()
         {
-
+            
         }
     }
 }

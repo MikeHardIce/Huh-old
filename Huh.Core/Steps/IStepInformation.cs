@@ -6,8 +6,6 @@ namespace Huh.Core.Steps
     {
         string Keyword { get; }
 
-        int ExecutionOrder { get; }
-        
         IStep CreateStep ();
     }
 }

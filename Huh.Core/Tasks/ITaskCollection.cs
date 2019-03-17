@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Huh.Core.Tasks 
 {
-    public interface ITaskQueue
+    public interface ITaskCollection
     {
         void Add (ITask task);
 
         void Add (IList<ITask> tasks);
 
-        ITask TakeFirst ();
+        ITask TakeHighestPriorityTask (string keyword);
     }
 }

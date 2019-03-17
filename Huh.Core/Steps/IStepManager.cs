@@ -7,6 +7,13 @@ namespace Huh.Core.Steps
         void Register (T stepInfo);
 
         IList<T> GetStepsFor (string keyword); 
-        
+
+        IList<(string keyword, bool enabled, int currentStepHash)> ListSteps ();
+
+        bool DisableStep (int currentStepHash);
+
+        bool EnableStep (int currentStepHash);
+
+        bool RemoveStep (int currentStepHash);   
     }
 }

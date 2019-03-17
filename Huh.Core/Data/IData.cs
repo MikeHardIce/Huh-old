@@ -4,6 +4,9 @@ namespace Huh.Core.Data
     {
         string Key { get; set; }
 
+        DataContent ContentType { get; set; }
+        
+        string ContentHint { get; set; }
         T Data { get; set; }
     }
 }

@@ -9,11 +9,17 @@ namespace Huh.Engine.Steps
 {
     public class StepManager : IStepManager<IStepInformation>
     {
-        private readonly IList<(bool enabled, IStepInformation step)> steps;
+        private class ManagedStepInformation
+        {
+            public bool enabled;
+            public IStepInformation step;
+        }
+
+        private readonly IList<ManagedStepInformation> steps;
 
         public StepManager()
         {
-            this.steps = new List<(bool enabled, IStepInformation step)>();
+            this.steps = new List<ManagedStepInformation>();
         }
         public bool DisableStep(int currentStepHash)
             => PerformAction(currentStepHash, m => { m.enabled = false; return true; });
@@ -28,12 +34,12 @@ namespace Huh.Engine.Steps
             => this.steps.Select(m => (m.step.Keyword, m.enabled, m.step.GetHashCode())).ToList();
 
         public void Register(IStepInformation stepInfo)
-            => this.steps.Add((false, stepInfo));
+            => this.steps.Add(new ManagedStepInformation { enabled = false, step = stepInfo});
 
         public bool RemoveStep(int currentStepHash)
             => PerformAction(currentStepHash, m => { return this.steps.Remove(m); }); 
 
-        private bool PerformAction (int currentStepHash, Func<(bool enabled, IStepInformation step), bool> action)
+        private bool PerformAction (int currentStepHash, Func<ManagedStepInformation, bool> action)
         {
             var step = this.steps.FirstOrDefault(m => m.step.GetHashCode() == currentStepHash);
 

@@ -1,14 +1,17 @@
 
+using System;
 using System.Collections.Generic;
 using Huh.Core.Data;
 
 namespace Huh.Core.Tasks
 {
-    public interface ITask
+    public interface ITask : ICloneable
     {
         string KeyWord { get; set; }
 
         long Priority { get; set; }
         IList<IData<string>> Data { get; set; }
+
+        
     }
 }

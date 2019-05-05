@@ -16,10 +16,10 @@ namespace Huh.Engine.Steps
             this.steps = new List<(bool enabled, IStepInformation step)>();
         }
         public bool DisableStep(int currentStepHash)
-            => PerformAction(currentStepHash, (m) => { m.enabled = false; return true; });
+            => PerformAction(currentStepHash, m => { m.enabled = false; return true; });
 
         public bool EnableStep(int currentStepHash)
-            => PerformAction(currentStepHash, (m) => { m.enabled = true; return true; });  
+            => PerformAction(currentStepHash, m => { m.enabled = true; return true; });  
 
         public IList<IStepInformation> GetStepsFor(string keyword)
             => this.steps.Select(m => m.step).Where(m => m.Keyword.Equals(keyword, StringComparison.InvariantCultureIgnoreCase)).ToList();
@@ -31,7 +31,7 @@ namespace Huh.Engine.Steps
             => this.steps.Add((false, stepInfo));
 
         public bool RemoveStep(int currentStepHash)
-            => PerformAction(currentStepHash, (m) => { return this.steps.Remove(m); }); 
+            => PerformAction(currentStepHash, m => { return this.steps.Remove(m); }); 
 
         private bool PerformAction (int currentStepHash, Func<(bool enabled, IStepInformation step), bool> action)
         {

@@ -10,5 +10,7 @@ namespace Huh.Core.Tasks
         void Add (IList<ITask> tasks);
 
         ITask TakeHighestPriorityTask (string keyword);
+
+        ITask TakeHighestPriorityTask();
     }
 }

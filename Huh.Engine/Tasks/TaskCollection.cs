@@ -7,11 +7,12 @@ using System;
 
 namespace Huh.Engine.Tasks
 {
-    public class TaskCollection : ITaskCollection
+    public class TaskCollection : ITaskCollectionExt<TaskCollection>
     {
         private readonly List<ITask> tasks;
 
-        private static object LockGetTask = new object();
+        protected List<ITask> Tasks => this.tasks;
+        private object LockGetTask = new object();
 
         public TaskCollection ()
         {
@@ -23,17 +24,29 @@ namespace Huh.Engine.Tasks
 
         public void Add(IList<ITask> tasks)
             => this.tasks.AddRange(tasks);
-        
+
+        public void Add(TaskCollection collection)
+            => Add(collection.Tasks);
 
         public ITask TakeHighestPriorityTask(string keyword)
+            => TakeTask(m => m.Where(by => by.KeyWord.Equals(keyword, StringComparison.InvariantCultureIgnoreCase))
+                    .OrderByDescending(by => by.Priority).FirstOrDefault());
+
+        public ITask TakeHighestPriorityTask()
+            => TakeTask(m => m.OrderByDescending(by => by.Priority).FirstOrDefault());
+
+        private ITask TakeTask (Func<IList<ITask>, ITask> func)
         {
             lock(LockGetTask)
             {
-                var task = this.tasks.Where(m => m.KeyWord.Equals(keyword, StringComparison.InvariantCultureIgnoreCase))
-                    .OrderByDescending(m => m.Priority).FirstOrDefault();
+                var task = func(this.tasks);
+
+                this.tasks.Remove(task);
 
                 return task;
             }
         }
+
+        
     }
 }

@@ -6,6 +6,11 @@ namespace Huh.Core.Steps
     {
         void Register (T stepInfo);
 
+        ///<summary>
+        /// Gets the steps for a specific keyword. In theory, there could be 
+        /// multiple Steps assigned to 1 keyword. That would mean
+        /// that those steps process the task independent of each other (asynchroneously)
+        ///</summary>
         IList<T> GetStepsFor (string keyword); 
 
         IList<(string keyword, bool enabled, int currentStepHash)> ListSteps ();

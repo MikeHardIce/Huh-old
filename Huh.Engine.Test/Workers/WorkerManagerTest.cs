@@ -4,7 +4,7 @@ using Huh.Core.Tasks;
 using Moq;
 using Xunit;
 
-namespace Huh.Engine.Test.workers 
+namespace Huh.Engine.Test.Workers 
 {
     public class WorkerManagerTest 
     {

@@ -4,8 +4,7 @@ using Huh.Core.Tasks;
 
 namespace Huh.Core.Workers
 {
-    public interface IWorkerManager<S,T>  where S : IStepInformation
-                                          where T : ITaskCollection
+    public interface IWorkerManager<S>  where S : IStepInformation
     {
         int MaxWorker { get; set; }
 
@@ -20,7 +19,7 @@ namespace Huh.Core.Workers
         //       Use this for a default implementation. Its Busy when there are items in
         //       the task collection and CurrentWorker == MaxWorker
         bool Busy { get; }
-        ITaskCollectionManager<T> TaskManager { get; }
+        ITaskCollectionManager TaskManager { get; }
 
         IStepManager<S> StepManager { get; }
 

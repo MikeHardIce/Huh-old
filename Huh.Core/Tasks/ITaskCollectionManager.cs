@@ -1,9 +1,9 @@
 
 namespace Huh.Core.Tasks
 {
-    public interface ITaskCollectionManager<T> where T : ITaskCollection
+    public interface ITaskCollectionManager
     {
-        ITaskCollectionExt<T> TaskCollection { get; }
+        ITaskCollection TaskCollection { get; }
 
     }
 }

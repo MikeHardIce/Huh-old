@@ -7,6 +7,6 @@ namespace Huh.Core.Steps
 {
     public interface IStep 
     {
-        ITaskCollection Process (ITask task);
+        IList<ITask> Process (ITask task);
     }
 }

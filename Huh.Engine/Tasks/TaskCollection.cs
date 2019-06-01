@@ -7,13 +7,11 @@ using System;
 
 namespace Huh.Engine.Tasks
 {
-    public class TaskCollection : ITaskCollectionExt<TaskCollection>
+    public class TaskCollection : ITaskCollection
     {
         private readonly List<ITask> tasks;
 
-        protected List<ITask> Tasks => this.tasks;
-
-        public bool Empty => Tasks.Count < 1;
+        public bool Empty => this.tasks.Count < 1;
 
         private object LockGetTask = new object();
 
@@ -28,8 +26,13 @@ namespace Huh.Engine.Tasks
         public void Add(IList<ITask> tasks)
             => this.tasks.AddRange(tasks);
 
-        public void Add(TaskCollection collection)
-            => Add(collection.Tasks);
+        public void Consume(ITaskCollection collection)
+        {
+            while(!collection.Empty)
+            {
+                Add(collection.TakeHighestPriorityTask());
+            }
+        }
 
         public ITask TakeHighestPriorityTask(string keyword)
             => TakeTask(m => m.Where(by => by.KeyWord.Equals(keyword, StringComparison.InvariantCultureIgnoreCase))

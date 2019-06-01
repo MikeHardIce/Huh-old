@@ -4,10 +4,10 @@ using Huh.Core.Tasks;
 
 namespace Huh.Engine.Tasks
 {
-    public class TaskCollectionManager : ITaskCollectionManager<TaskCollection>
+    public class TaskCollectionManager : ITaskCollectionManager
     {
-        private readonly ITaskCollectionExt<TaskCollection> taskCollection;
-        public ITaskCollectionExt<TaskCollection> TaskCollection => this.taskCollection;
+        private readonly ITaskCollection taskCollection;
+        public ITaskCollection TaskCollection => this.taskCollection;
 
         public TaskCollectionManager ()
         {

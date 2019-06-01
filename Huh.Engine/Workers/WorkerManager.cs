@@ -25,7 +25,7 @@ namespace Huh.Engine.Workers
         public int CurrentWorker => this.workers.Count;
 
         public bool Busy => CurrentWorker >= MaxWorker 
-                            && !TaskManager.TaskCollection.Empty;
+                            && this.workers.All(m => m.Executing);
 
         public ITaskCollectionManager TaskManager => this.taskManager;
 

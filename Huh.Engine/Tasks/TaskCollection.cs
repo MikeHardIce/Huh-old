@@ -12,6 +12,9 @@ namespace Huh.Engine.Tasks
         private readonly List<ITask> tasks;
 
         protected List<ITask> Tasks => this.tasks;
+
+        public bool Empty => Tasks.Count < 1;
+
         private object LockGetTask = new object();
 
         public TaskCollection ()

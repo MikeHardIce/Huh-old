@@ -20,7 +20,7 @@ namespace Huh.Core.Workers
         //       Use this for a default implementation. Its Busy when there are items in
         //       the task collection and CurrentWorker == MaxWorker
         bool Busy { get; }
-        ITaskCollectionManager<T> TaskCollection { get; }
+        ITaskCollectionManager<T> TaskManager { get; }
 
         IStepManager<S> StepManager { get; }
 

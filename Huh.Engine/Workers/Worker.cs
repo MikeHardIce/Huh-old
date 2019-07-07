@@ -43,19 +43,24 @@ namespace Huh.Engine.Workers
 
                 this.countdown = new CountdownEvent(steps.Count);
 
+
+                steps.ToList().ForEach(m => {
+                    Task.Factory.StartNew(() => {
+                        
+                        m.CreateSteps().ToList().ForEach(step => {
+                            this.createdTasks.Add(step.Process(task));
+                        });
+                        
+                        this.countdown.Signal();
+                    }, cancelationToken);
+                });
+
                 var waitingTask = Task.Factory.StartNew(() => {
 
                     this.countdown.Wait();
                     this.isExecuting = false;
                 });
-
-                steps.ToList().ForEach(m => {
-                    Task.Factory.StartNew(() => {
-                        var step = m.CreateStep();
-                        this.createdTasks.Add(step.Process(task));
-                        this.countdown.Signal();
-                    }, cancelationToken);
-                }); 
+ 
             }
               
         }

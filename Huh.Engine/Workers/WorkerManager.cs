@@ -77,7 +77,6 @@ namespace Huh.Engine.Workers
 
         private void ManageTasks()
         {
-
             AssignTasksToIdleWorkers();
             
             CreateNewWorkerIfNeeded();

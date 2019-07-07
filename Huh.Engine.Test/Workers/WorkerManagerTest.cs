@@ -34,7 +34,6 @@ namespace Huh.Engine.Test.Workers
             Thread.Sleep(500);
 
             manager.TaskManager.TaskCollection.Empty.ShouldBeTrue();
-            
         }
     }
 }

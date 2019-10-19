@@ -39,6 +39,7 @@ namespace Huh.Engine.Workers
             this.managerTokenSource = new CancellationTokenSource();
             this.workerTokenSouce   = new CancellationTokenSource();
         }
+        
         public void Start()
         {
             if(!this.started)
@@ -71,9 +72,8 @@ namespace Huh.Engine.Workers
         }
 
         public void StopWorkingOnNewTasks()
-        {
-            this.started = false;
-        }
+            => this.started = false;
+        
 
         private void ManageTasks()
         {

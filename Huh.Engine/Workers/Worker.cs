@@ -47,6 +47,7 @@ namespace Huh.Engine.Workers
                 steps.ToList().ForEach(m => {
                     Task.Factory.StartNew(() => {
                         
+                        //sequentially process steps associated to the same StepInfo
                         m.CreateSteps().ToList().ForEach(step => {
                             this.createdTasks.Add(step.Process(task));
                         });

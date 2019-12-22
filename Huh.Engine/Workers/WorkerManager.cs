@@ -8,6 +8,7 @@ using Huh.Core.Tasks;
 using Huh.Core.Workers;
 using Huh.Engine.Steps;
 using Huh.Engine.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Huh.Engine.Workers
 {
@@ -17,6 +18,7 @@ namespace Huh.Engine.Workers
         private readonly ITaskCollectionManager taskManager;
         private readonly IStepManager<IStepInformation> stepManager;
         
+        private readonly ILogger logger;
         private CancellationTokenSource managerTokenSource;
         private CancellationTokenSource workerTokenSouce;
         public bool started;
@@ -31,13 +33,16 @@ namespace Huh.Engine.Workers
 
         public IStepManager<IStepInformation> StepManager => this.stepManager;
 
-        public WorkerManager ()
+        public WorkerManager (ILogger logger)
         {
             this.stepManager        = new StepManager();
             this.taskManager        = new TaskCollectionManager();
             this.workers            = new List<Worker>();
+
             this.managerTokenSource = new CancellationTokenSource();
             this.workerTokenSouce   = new CancellationTokenSource();
+
+            this.logger             = logger;
         }
         
         public void Start()
@@ -91,7 +96,7 @@ namespace Huh.Engine.Workers
             if(!this.taskManager.TaskCollection.Empty
                     && CurrentWorker < MaxWorker)
             {
-                var worker = new Worker(this.stepManager);
+                var worker = new Worker(this.stepManager, this.logger);
 
                 this.workers.Add(worker);
 

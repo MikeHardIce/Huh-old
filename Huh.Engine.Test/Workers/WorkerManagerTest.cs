@@ -3,6 +3,7 @@ using System.Threading;
 using Huh.Core.Steps;
 using Huh.Core.Tasks;
 using Huh.Engine.Workers;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Shouldly;
 using Xunit;
@@ -22,7 +23,7 @@ namespace Huh.Engine.Test.Workers
             var stepInfo = new Mock<IStepInformation>();
             var task     = new Mock<ITask>();
 
-            var manager = new WorkerManager();
+            var manager = new WorkerManager(new Mock<ILogger>().Object);
 
             manager.StepManager.Register(stepInfo.Object);
 

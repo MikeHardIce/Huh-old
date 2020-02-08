@@ -12,7 +12,6 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Huh.Core\Huh.Core.csproj"/>
     <ProjectReference Include="..\Huh.Engine\Huh.Engine.csproj"/>
   </ItemGroup>
 </Project>

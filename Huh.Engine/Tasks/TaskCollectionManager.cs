@@ -11,6 +11,5 @@ namespace Huh.Engine.Tasks
 
         public TaskCollectionManager ()
             => this.taskCollection = new TaskCollection();
-        
     }
 }

@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+        <id>Huh.Core</id>
+        <version>0.0.1</version>
+        <authors>OgreBelly</authors>
+        <owners>OgreBelly</owners>
+        <projectUrl>https://github.com/OgreBelly/Huh</projectUrl>
+        <license></license>
+        <iconUrl></iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <releaseNotes></releaseNotes>
+        <description></description>
+        <tags></tags>
   </PropertyGroup>
-
 </Project>

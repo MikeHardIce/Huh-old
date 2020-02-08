@@ -105,25 +105,20 @@ namespace Huh.Engine.Workers
         }
 
         private void AssignTasksToIdleWorkers ()
-        {
-            this.workers.Where(m => !m.Executing).ToList().ForEach(m => {
-                ITask task = this.taskManager.TaskCollection.TakeHighestPriorityTask();
+            => this.workers.Where(m => !m.Executing).ToList().ForEach(m => {
+                    ITask task = this.taskManager.TaskCollection.TakeHighestPriorityTask();
 
-                if(task != null && task.KeyWord.Length > 1)
-                {
-                    m.Execute(task, this.workerTokenSouce.Token);
-                }
-            });
-
-        }
+                    if(task != null && task.KeyWord.Length > 1)
+                    {
+                        m.Execute(task, this.workerTokenSouce.Token);
+                    }
+                });
 
         private void ConsumeCreatedTasksOfAllWorkers ()
-        {
-            this.workers.ToList().ForEach(m => {
-                this.taskManager.TaskCollection.Consume(m.CreatedTasks);
-            });
-        }
-
+            =>  this.workers.ToList().ForEach(m => {
+                    this.taskManager.TaskCollection.Consume(m.CreatedTasks);
+                });
+    
         private void RemoveIdleWorkers ()
         {
             var toBeRemoved = this.workers.Where(m => !m.Executing).ToList();

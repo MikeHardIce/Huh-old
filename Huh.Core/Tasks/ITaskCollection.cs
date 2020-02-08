@@ -17,6 +17,11 @@ namespace Huh.Core.Tasks
         ///</summary>
         void Consume (ITaskCollection tasks);
 
+        ///<summary>
+        ///Takes all tasks out of the collection
+        ///</summary>
+        ICollection<ITask> TakeAll ();
+
         ITask TakeHighestPriorityTask (string keyword);
 
         ITask TakeHighestPriorityTask();

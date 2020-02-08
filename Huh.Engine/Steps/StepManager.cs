@@ -17,9 +17,7 @@ namespace Huh.Engine.Steps
         private readonly IList<ManagedStepInformation> steps;
 
         public StepManager()
-        {
-            this.steps = new List<ManagedStepInformation>();
-        }
+            => this.steps = new List<ManagedStepInformation>();
         public bool DisableStep(int currentStepHash)
             => PerformAction(currentStepHash, m => { m.enabled = false; return true; });
 

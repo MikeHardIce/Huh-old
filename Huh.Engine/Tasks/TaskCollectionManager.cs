@@ -10,8 +10,7 @@ namespace Huh.Engine.Tasks
         public ITaskCollection TaskCollection => this.taskCollection;
 
         public TaskCollectionManager ()
-        {
-            this.taskCollection = new TaskCollection();
-        }
+            => this.taskCollection = new TaskCollection();
+        
     }
 }

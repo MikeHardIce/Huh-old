@@ -65,9 +65,7 @@ namespace Huh.Engine.Workers
                         this.countdown.Signal();
                     }, cancelationToken);
                 });
-
-            }
-              
+            }              
         }
     }
 }

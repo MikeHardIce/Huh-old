@@ -58,7 +58,5 @@ namespace Huh.Engine.Test.Steps
 
             this.stepManager.ListSteps().Any(m => m.enabled).ShouldBeFalse();
         }
-
-
     }
 }

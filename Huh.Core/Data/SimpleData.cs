@@ -1,7 +1,5 @@
 
-using Huh.Core.Data;
-
-namespace Huh.Engine.Data
+namespace Huh.Core.Data
 {
     public struct SimpleData : IData<string>
     {

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
         <id>Huh.Core</id>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
         <authors>OgreBelly</authors>
         <owners>OgreBelly</owners>
         <projectUrl>https://github.com/OgreBelly/Huh</projectUrl>

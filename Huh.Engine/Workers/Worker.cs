@@ -1,4 +1,5 @@
 
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,14 +35,29 @@ namespace Huh.Engine.Workers
         {
             if(!this.isExecuting)
             {
-                this.logger.LogInformation($"Start prosessing task \"{task.KeyWord}\"");
                 this.isExecuting = true;
 
-                var steps = this.stepManager.GetStepsFor(task.KeyWord);
+                var keyword = "";
+                
+                try
+                {
+                    keyword = task.KeyWord.Dequeue();
+                }
+                catch(InvalidOperationException)
+                {
+                    this.logger.LogInformation($"Task does not have a keyword. Skipping task ...");
+                    return;
+                }
+                
+
+                this.logger.LogInformation($"Start prosessing task \"{task.KeyWord}\"");
+
+                var steps   = this.stepManager.GetStepsFor(keyword);
 
                 if(steps.Count < 1)
                 {
-                    this.logger.LogWarning($"No suitable steps found for keyword \"{task.KeyWord}\"");
+                    //TODO: Have an option to use to the next keyword???
+                    this.logger.LogWarning($"No suitable steps found for keyword \"{keyword}\"");
                     return;
                 }
 
@@ -51,7 +67,7 @@ namespace Huh.Engine.Workers
 
                     this.countdown.Wait();
                     this.isExecuting = false;
-                    this.logger.LogInformation($"Task \"{task.KeyWord}\" completed");
+                    this.logger.LogInformation($"Task \"{keyword}\" completed");
                 });
 
                 steps.ToList().ForEach(m => {

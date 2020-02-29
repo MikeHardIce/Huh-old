@@ -3,14 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
         <id>Huh.Core</id>
-        <version>0.0.2</version>
+        <version>0.0.3</version>
         <authors>OgreBelly</authors>
         <owners>OgreBelly</owners>
         <projectUrl>https://github.com/OgreBelly/Huh</projectUrl>
         <license></license>
         <iconUrl></iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <releaseNotes></releaseNotes>
+        <releaseNotes>How about a task that can go through multiple steps?</releaseNotes>
         <description></description>
         <tags></tags>
   </PropertyGroup>

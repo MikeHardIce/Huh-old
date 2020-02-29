@@ -25,7 +25,7 @@ namespace Huh.Engine.Test.Tasks
 
             var returnedTask = this.taskCollection.TakeHighestPriorityTask("abc");
 
-            returnedTask.KeyWord.ShouldBe("abc");
+            returnedTask.KeyWord.Peek().ShouldBe("abc");
             returnedTask.Priority.ShouldBe(3);
             returnedTask.Data.FirstOrDefault().Data.ShouldBe("bla");
             returnedTask.Data.FirstOrDefault().Key.ShouldBe("name");
@@ -75,8 +75,11 @@ namespace Huh.Engine.Test.Tasks
         private ITask CreateTask (string keyword, int priority)
         {
             var task = new Mock<ITask>();
+            var keyQueue = new Queue<string>();
 
-            task.SetupGet(m => m.KeyWord).Returns(keyword);
+            keyQueue.Enqueue(keyword);
+
+            task.SetupGet(m => m.KeyWord).Returns(keyQueue);
             task.SetupGet(m => m.Priority).Returns(priority);
             task.SetupGet(m => m.Data).Returns(new List<IData<string>> {
                 new SimpleData{ Data = "bla", Key = "name"}

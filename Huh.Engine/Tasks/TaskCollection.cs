@@ -20,16 +20,29 @@ namespace Huh.Engine.Tasks
             => this.tasks = new List<ITask>();
         
         public void Add(ITask task)
-            => this.tasks.Add(task);
+        {
+            lock(this.LockGetTask)
+            {
+                try 
+                {
+                    if(!string.IsNullOrEmpty(task.KeyWord.Peek()))
+                        this.tasks.Add(task);
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+        }
     
         public void Add(IList<ITask> tasks)
-            => this.tasks.AddRange(tasks);
+            => tasks.ToList().ForEach(m => Add(m));
 
         public void Consume(ITaskCollection collection)
             => Add(collection.TakeAll().OrderByDescending(m => m.Priority).ToList());
             
         public ITask TakeHighestPriorityTask(string keyword)
-            => TakeTask(m => m.Where(by => by.KeyWord.Equals(keyword, StringComparison.InvariantCultureIgnoreCase))
+            => TakeTask(m => m.Where(by => by.KeyWord.Peek().Equals(keyword, StringComparison.InvariantCultureIgnoreCase))
                     .OrderByDescending(by => by.Priority).FirstOrDefault());
 
         public ITask TakeHighestPriorityTask()
@@ -53,7 +66,8 @@ namespace Huh.Engine.Tasks
             {
                 var task = func(this.tasks);
 
-                this.tasks.Remove(task);
+                if(task != null)
+                    this.tasks.Remove(task);
 
                 return task;
             }

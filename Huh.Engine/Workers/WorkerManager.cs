@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -108,10 +109,18 @@ namespace Huh.Engine.Workers
             => this.workers.Where(m => !m.Executing).ToList().ForEach(m => {
                     ITask task = this.taskManager.TaskCollection.TakeHighestPriorityTask();
 
-                    if(task != null && task.KeyWord.Length > 1)
+                    try 
                     {
-                        m.Execute(task, this.workerTokenSouce.Token);
+                        if(task != null && task.KeyWord.Peek().Length > 1)
+                        {
+                            m.Execute(task, this.workerTokenSouce.Token);
+                        }
                     }
+                    catch(InvalidOperationException)
+                    {
+                        this.logger.LogInformation("Found task without a keyword. Skipping task ...");
+                    }
+                    
                 });
 
         private void ConsumeCreatedTasksOfAllWorkers ()

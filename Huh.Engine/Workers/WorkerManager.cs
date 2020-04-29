@@ -56,7 +56,7 @@ namespace Huh.Engine.Workers
         {
             if(!this.isRunning)
             {
-                this.isRunning = true;
+                
                 if(this.workerTokenSouce.IsCancellationRequested)
                 {
                     this.workerTokenSouce = new CancellationTokenSource();
@@ -75,6 +75,7 @@ namespace Huh.Engine.Workers
         {
             if(!this.isRunning)
             {
+                this.isRunning = true;
                 System.Threading.Tasks.Task.Factory.StartNew(() => {
 
                     ManageTasks();

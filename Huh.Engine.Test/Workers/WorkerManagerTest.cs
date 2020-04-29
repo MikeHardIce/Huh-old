@@ -2,6 +2,7 @@
 using System.Threading;
 using Huh.Core.Steps;
 using Huh.Core.Tasks;
+using Huh.Engine.Tasks;
 using Huh.Engine.Workers;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -21,13 +22,18 @@ namespace Huh.Engine.Test.Workers
         public void TestStartStop ()
         {
             var stepInfo = new Mock<IStepInformation>();
-            var task     = new Mock<ITask>();
+
+            stepInfo.SetupGet(m => m.Keyword).Returns("Hah");
+
+            var task     = new Task();
+
+            task.KeyWord.Enqueue("Hah");
 
             var manager = new WorkerManager(new Mock<ILogger>().Object);
 
             manager.StepManager.Register(stepInfo.Object);
 
-            manager.TaskManager.TaskCollection.Add(task.Object);
+            manager.TaskManager.TaskCollection.Add(task);
 
             manager.Start();
 

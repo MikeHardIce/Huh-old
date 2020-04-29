@@ -13,6 +13,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Huh.Engine.Workers
 {
+    public class FinalTaskEventArgs : EventArgs
+    {
+        public ITask FinalTask { get; set; }
+    } 
     public class WorkerManager : IWorkerManager<IStepInformation>
     {
         private readonly IList<Worker> workers;
@@ -22,7 +26,7 @@ namespace Huh.Engine.Workers
         private readonly ILogger logger;
         private CancellationTokenSource managerTokenSource;
         private CancellationTokenSource workerTokenSouce;
-        public bool started;
+        public bool isRunning;
         public int MaxWorker { get; set; } = 5;
 
         public int CurrentWorker => this.workers.Count;
@@ -33,6 +37,8 @@ namespace Huh.Engine.Workers
         public ITaskCollectionManager TaskManager => this.taskManager;
 
         public IStepManager<IStepInformation> StepManager => this.stepManager;
+
+        public EventHandler<FinalTaskEventArgs> FinalTaskEvent {get; set;}
 
         public WorkerManager (ILogger logger)
         {
@@ -48,9 +54,9 @@ namespace Huh.Engine.Workers
         
         public void Start()
         {
-            if(!this.started)
+            if(!this.isRunning)
             {
-                this.started = true;
+                this.isRunning = true;
                 if(this.workerTokenSouce.IsCancellationRequested)
                 {
                     this.workerTokenSouce = new CancellationTokenSource();
@@ -61,10 +67,19 @@ namespace Huh.Engine.Workers
                     this.managerTokenSource = new CancellationTokenSource();
                 }
 
-                Task.Factory.StartNew(() => {
+                Run();
+            }
+        }
+
+        private void Run ()
+        {
+            if(!this.isRunning)
+            {
+                System.Threading.Tasks.Task.Factory.StartNew(() => {
 
                     ManageTasks();
                     Thread.SpinWait(100);
+                    Run();
        
                 }, this.managerTokenSource.Token);
             }
@@ -72,13 +87,13 @@ namespace Huh.Engine.Workers
 
         public void Stop()
         {
-            this.started = false;
+            this.isRunning = false;
             
             this.workerTokenSouce.Cancel();
         }
 
         public void StopWorkingOnNewTasks()
-            => this.started = false;
+            => this.isRunning = false;
         
 
         private void ManageTasks()
@@ -109,18 +124,24 @@ namespace Huh.Engine.Workers
             => this.workers.Where(m => !m.Executing).ToList().ForEach(m => {
                     ITask task = this.taskManager.TaskCollection.TakeHighestPriorityTask();
 
-                    try 
+                    if(task != null)
                     {
-                        if(task != null && task.KeyWord.Peek().Length > 1)
+                        try 
                         {
-                            m.Execute(task, this.workerTokenSouce.Token);
+                            if(task.KeyWord.Count > 0 && task.KeyWord.Peek().Length > 1)
+                            {
+                                m.Execute(task, this.workerTokenSouce.Token);
+                            }
+                            else 
+                            {
+                                FinalTaskEvent(this, new FinalTaskEventArgs { FinalTask = task});
+                            }
+                        }
+                        catch(InvalidOperationException)
+                        {
+                            this.logger.LogInformation("Found task without a keyword. Skipping task ...");
                         }
                     }
-                    catch(InvalidOperationException)
-                    {
-                        this.logger.LogInformation("Found task without a keyword. Skipping task ...");
-                    }
-                    
                 });
 
         private void ConsumeCreatedTasksOfAllWorkers ()

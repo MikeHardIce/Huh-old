@@ -63,7 +63,7 @@ namespace Huh.Engine.Workers
 
                 this.countdown = new CountdownEvent(steps.Count);
 
-                Task.Factory.StartNew(() => {
+                System.Threading.Tasks.Task.Factory.StartNew(() => {
 
                     this.countdown.Wait();
                     this.isExecuting = false;
@@ -71,11 +71,12 @@ namespace Huh.Engine.Workers
                 });
 
                 steps.ToList().ForEach(m => {
-                    Task.Factory.StartNew(() => {
+                    System.Threading.Tasks.Task.Factory.StartNew(() => {
                         //sequentially process steps associated to the same StepInfo
                         m.CreateSteps().ToList().ForEach(step => {
-                            
-                            this.createdTasks.Add(step.Process(task));
+                            // in theory the condition could modify the task,
+                            if(step.Condition(task))
+                                this.createdTasks.Consume(step.Process((ITask)task.Clone()));  
                         });
                         
                         this.countdown.Signal();

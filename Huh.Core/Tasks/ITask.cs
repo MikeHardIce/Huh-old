@@ -10,6 +10,6 @@ namespace Huh.Core.Tasks
         Queue<string> KeyWord { get; set; }
 
         long Priority { get; set; }
-        IList<IData<string>> Data { get; set; }       
+        IList<Record> Records { get; set; }       
     }
 }

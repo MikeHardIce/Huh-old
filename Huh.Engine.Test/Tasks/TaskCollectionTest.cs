@@ -27,10 +27,32 @@ namespace Huh.Engine.Test.Tasks
 
             returnedTask.KeyWord.Peek().ShouldBe("abc");
             returnedTask.Priority.ShouldBe(3);
-            returnedTask.Data.FirstOrDefault().Data.ShouldBe("bla");
-            returnedTask.Data.FirstOrDefault().Key.ShouldBe("name");
+            Assert.Equal(returnedTask.Records.FirstOrDefault().Content, "bla");
+            returnedTask.Records.FirstOrDefault().Key.ShouldBe("name");
 
             this.taskCollection.TakeHighestPriorityTask().ShouldBeNull();
+        }
+
+        [Fact]
+        public void TestTakeAll ()
+        {
+            var expected = new List<ITask> 
+            {
+                CreateTask("abc", 1)
+                , CreateTask("abc", 2)
+                , CreateTask("abc", 5)
+                , CreateTask("def", 2)
+                , CreateTask("def", 2)
+                , CreateTask("def", -1)
+            };
+
+            this.taskCollection.Add(expected);
+            this.taskCollection.Empty.ShouldBeFalse();
+            
+            var result = this.taskCollection.TakeAll();
+
+            this.taskCollection.Empty.ShouldBeTrue();
+            result.Count.ShouldBe(expected.Count);
         }
 
         [Fact]
@@ -81,8 +103,8 @@ namespace Huh.Engine.Test.Tasks
 
             task.SetupGet(m => m.KeyWord).Returns(keyQueue);
             task.SetupGet(m => m.Priority).Returns(priority);
-            task.SetupGet(m => m.Data).Returns(new List<IData<string>> {
-                new SimpleData{ Data = "bla", Key = "name"}
+            task.SetupGet(m => m.Records).Returns(new List<Core.Data.Record> {
+                new Core.Data.Record("name","", "bla")
                 });
 
             return task.Object;

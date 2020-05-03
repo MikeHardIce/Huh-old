@@ -10,28 +10,24 @@ namespace Huh.Engine.Tasks
     {
         public Queue<string> KeyWord { get ; set; } = new Queue<string>();
         public long Priority { get; set; }
-        public IList<IData<string>> Data { get; set; } = new List<IData<string>>();
+        public IList<Record> Records { get; set; } = new List<Record>();
 
         public Task ()
         {
 
         }
         
-        public Task (string keyWord, SimpleData data)
+        public Task (string keyWord, Record record)
         {
             KeyWord.Enqueue(keyWord);
-            Data.Add(data);
+            Records.Add(record);
         }
 
         public object Clone()
             => new Task {
                 KeyWord = new Queue<string>(KeyWord)
                 , Priority = Priority
-                , Data = (IList<IData<string>>) Data.Select(m => new SimpleData { Data = m.Data
-                            , Key = m.Key
-                            , ContentHint = m.ContentHint
-                            , ContentType = m.ContentType 
-                            }).ToList()
+                , Records = Records.Select(m => m.Copy()).ToList()
             };
     }
 }

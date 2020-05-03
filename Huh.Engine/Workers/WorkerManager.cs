@@ -26,13 +26,15 @@ namespace Huh.Engine.Workers
         private readonly ILogger logger;
         private CancellationTokenSource managerTokenSource;
         private CancellationTokenSource workerTokenSouce;
-        public bool isRunning;
+        private bool isRunning;
         public int MaxWorker { get; set; } = 5;
 
         public int CurrentWorker => this.workers.Count;
 
         public bool Busy => CurrentWorker >= MaxWorker 
                             && this.workers.All(m => m.Executing);
+
+        public bool IsRunning => this.isRunning;
 
         public ITaskCollectionManager TaskManager => this.taskManager;
 
@@ -78,10 +80,10 @@ namespace Huh.Engine.Workers
                 this.isRunning = true;
                 System.Threading.Tasks.Task.Factory.StartNew(() => {
 
-                    ManageTasks();
-                    Thread.SpinWait(100);
-                    Run();
-       
+                    while(this.isRunning)
+                    {
+                        ManageTasks();
+                    }
                 }, this.managerTokenSource.Token);
             }
         }
@@ -117,33 +119,12 @@ namespace Huh.Engine.Workers
 
                 this.workers.Add(worker);
 
-                worker.Execute(this.taskManager.TaskCollection.TakeHighestPriorityTask(), this.workerTokenSouce.Token);
+                AssignTaskToWorker(worker);
             }
         }
 
         private void AssignTasksToIdleWorkers ()
-            => this.workers.Where(m => !m.Executing).ToList().ForEach(m => {
-                    ITask task = this.taskManager.TaskCollection.TakeHighestPriorityTask();
-
-                    if(task != null)
-                    {
-                        try 
-                        {
-                            if(task.KeyWord.Count > 0 && task.KeyWord.Peek().Length > 1)
-                            {
-                                m.Execute(task, this.workerTokenSouce.Token);
-                            }
-                            else 
-                            {
-                                FinalTaskEvent(this, new FinalTaskEventArgs { FinalTask = task});
-                            }
-                        }
-                        catch(InvalidOperationException)
-                        {
-                            this.logger.LogInformation("Found task without a keyword. Skipping task ...");
-                        }
-                    }
-                });
+            => this.workers.Where(m => !m.Executing).ToList().ForEach(m => AssignTaskToWorker(m));
 
         private void ConsumeCreatedTasksOfAllWorkers ()
             =>  this.workers.ToList().ForEach(m => {
@@ -161,5 +142,31 @@ namespace Huh.Engine.Workers
                 this.workers.Remove(m);
             });
         }
+
+        private void AssignTaskToWorker (IWorker worker)
+        {
+            ITask task = this.taskManager.TaskCollection.TakeHighestPriorityTask();
+
+            if(task != null)
+            {
+                try 
+                {
+                    if(task.KeyWord.Count > 0 && task.KeyWord.Peek().Length > 1)
+                    {
+                        worker.Execute(task, this.workerTokenSouce.Token);
+                    }
+                    else 
+                    {
+                        FinalTaskEvent(this, new FinalTaskEventArgs { FinalTask = task});
+                    }
+                }
+                catch(InvalidOperationException)
+                {
+                    this.logger.LogInformation("Found task without a keyword. Skipping task ...");
+                }
+            }
+        }
+
+        
     }
 }

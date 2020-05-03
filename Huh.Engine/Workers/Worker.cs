@@ -30,6 +30,8 @@ namespace Huh.Engine.Workers
             this.stepManager = stepManager;
 
             this.createdTasks = new TaskCollection();
+
+            this.logger = logger;
         }
         public void Execute(ITask task, CancellationToken cancelationToken)
         {

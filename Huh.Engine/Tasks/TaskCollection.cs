@@ -25,7 +25,6 @@ namespace Huh.Engine.Tasks
             {
                 try 
                 {
-                    if(!string.IsNullOrEmpty(task.KeyWord.Peek()))
                         this.tasks.Add(task);
                 }
                 catch (Exception)

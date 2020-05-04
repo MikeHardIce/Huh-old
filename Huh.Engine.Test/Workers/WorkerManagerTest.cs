@@ -85,7 +85,8 @@ namespace Huh.Engine.Test.Workers
 
             manager.Start();
 
-            Thread.Sleep(2000);
+            // There must be a better way
+            Thread.Sleep(500);
 
             manager.Stop();
 

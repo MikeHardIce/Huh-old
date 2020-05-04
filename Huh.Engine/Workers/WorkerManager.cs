@@ -84,6 +84,7 @@ namespace Huh.Engine.Workers
                     {
                         ManageTasks();
                     }
+
                 }, this.managerTokenSource.Token);
             }
         }
@@ -93,6 +94,7 @@ namespace Huh.Engine.Workers
             this.isRunning = false;
             
             this.workerTokenSouce.Cancel();
+            this.managerTokenSource.Cancel();
         }
 
         public void StopWorkingOnNewTasks()
@@ -157,7 +159,8 @@ namespace Huh.Engine.Workers
                     }
                     else 
                     {
-                        FinalTaskEvent(this, new FinalTaskEventArgs { FinalTask = task});
+                        //FinalTaskEvent(this, new FinalTaskEventArgs { FinalTask = (ITask)task.Clone()});
+                        this.taskManager.TaskCollection.Add(task);
                     }
                 }
                 catch(InvalidOperationException)

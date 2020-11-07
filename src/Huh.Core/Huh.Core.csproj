@@ -2,16 +2,16 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <id>Huh.Core</id>
-    <version>0.0.3-dev</version>
+    <version>0.0.1-alpha</version>
     <authors>OgreBelly</authors>
     <owners>OgreBelly</owners>
     <projectUrl>https://github.com/OgreBelly/Huh</projectUrl>
-    <license/>
-    <iconUrl/>
+    <license>MIT</license>
+    <iconUrl></iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <releaseNotes/>
-    <description/>
-    <tags/>
+    <releaseNotes></releaseNotes>
+    <description>Abstraction for processing custom tasks. How to "process" those tasks is implemented in steps, which are executed by workers. Each step can spawn new tasks.</description>
+    <tags></tags>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0"/>

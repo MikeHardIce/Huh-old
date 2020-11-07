@@ -1,12 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.1"/>
-    <ProjectReference Include="..\Huh.Core\Huh.Core.csproj"/>
+    <!--<ProjectReference Include="..\Huh.Core\Huh.Core.csproj"/>-->
+    <PackageReference Include="Huh.Core" Version="0.0.1-alpha" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <id>Huh</id>
-    <version>0.0.1-alpha</version>
+    <id>Huh.Engine</id>
+    <version>0.0.1-alpha1</version>
     <authors>OgreBelly</authors>
     <owners>OgreBelly</owners>
     <projectUrl>https://github.com/OgreBelly/Huh</projectUrl>

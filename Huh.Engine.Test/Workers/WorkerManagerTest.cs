@@ -70,7 +70,6 @@ namespace Huh.Engine.Test.Workers
             manager.Start();
             manager.IsRunning.ShouldBeTrue();
 
-            //TODO: Check out alternatives to this
             Thread.Sleep(500);
 
             manager.TaskManager.TaskCollection.Empty.ShouldBeTrue();
@@ -80,7 +79,7 @@ namespace Huh.Engine.Test.Workers
             manager.IsRunning.ShouldBeFalse();
         }
 
-        [Fact(Timeout = 100)]
+        [Fact(Timeout = 10)]
         public void TestChaining ()
         {
             var one = new Mock<IStepInformation>();

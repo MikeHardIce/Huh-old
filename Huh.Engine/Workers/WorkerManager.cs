@@ -13,10 +13,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Huh.Engine.Workers
 {
-    public class FinalTaskEventArgs : EventArgs
-    {
-        public ITask FinalTask { get; set; }
-    } 
     public class WorkerManager : IWorkerManager<IStepInformation>
     {
         private readonly IList<Worker> workers;
@@ -40,8 +36,6 @@ namespace Huh.Engine.Workers
 
         public IStepManager<IStepInformation> StepManager => this.stepManager;
 
-        public EventHandler<FinalTaskEventArgs> FinalTaskEvent {get; set;}
-
         public WorkerManager (ILogger logger)
         {
             this.stepManager        = new StepManager();
@@ -58,7 +52,6 @@ namespace Huh.Engine.Workers
         {
             if(!this.isRunning)
             {
-                
                 if(this.workerTokenSouce.IsCancellationRequested)
                 {
                     this.workerTokenSouce = new CancellationTokenSource();
@@ -80,10 +73,8 @@ namespace Huh.Engine.Workers
                 this.isRunning = true;
                 System.Threading.Tasks.Task.Factory.StartNew(() => {
 
-                    while(this.isRunning)
-                    {
-                        ManageTasks();
-                    }
+                while(this.isRunning)
+                    ManageTasks();
 
                 }, this.managerTokenSource.Token);
             }
@@ -150,26 +141,7 @@ namespace Huh.Engine.Workers
             ITask task = this.taskManager.TaskCollection.TakeHighestPriorityTask();
 
             if(task != null)
-            {
-                try 
-                {
-                    if(task.KeyWord.Count > 0 && task.KeyWord.Peek().Length > 1)
-                    {
-                        worker.Execute(task, this.workerTokenSouce.Token);
-                    }
-                    else 
-                    {
-                        //FinalTaskEvent(this, new FinalTaskEventArgs { FinalTask = (ITask)task.Clone()});
-                        this.taskManager.TaskCollection.Add(task);
-                    }
-                }
-                catch(InvalidOperationException)
-                {
-                    this.logger.LogInformation("Found task without a keyword. Skipping task ...");
-                }
-            }
+              worker.Execute(task, this.workerTokenSouce.Token);
         }
-
-        
     }
 }

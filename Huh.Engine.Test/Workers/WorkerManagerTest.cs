@@ -6,6 +6,7 @@ using System.Threading;
 using Huh.Core.Data;
 using Huh.Core.Steps;
 using Huh.Core.Tasks;
+using Huh.Engine.Steps;
 using Huh.Engine.Tasks;
 using Huh.Engine.Workers;
 using Microsoft.Extensions.Logging;
@@ -22,6 +23,33 @@ namespace Huh.Engine.Test.Workers
             
         }
 
+        [Fact(Timeout = 10)]
+        public void TestResult ()
+        {
+            var stepInfo = new Mock<IStepInformation>();
+
+            var final = new ResultInfo();
+            stepInfo.SetupGet(m => m.Keyword).Returns("Hah");
+
+            var manager = new WorkerManager(new Mock<ILogger>().Object);
+
+            manager.StepManager.Register(stepInfo.Object);
+            manager.StepManager.Register(final);
+
+            manager.TaskManager.TaskCollection.Add(new Task {
+                KeyWord = ""
+                , Records = new List<Core.Data.Record> { new Core.Data.Record{
+                    ContentHint = "Hello"
+                }}
+            });
+
+            manager.Start();
+
+            while(final.Results.IsEmpty) {}
+
+            final.Results.First().ContentHint.ShouldBe("Hello");
+        }
+
         [Fact]
         public void TestStartStop ()
         {
@@ -31,7 +59,7 @@ namespace Huh.Engine.Test.Workers
 
             var task     = new Task();
 
-            task.KeyWord.Enqueue("Hah");
+            task.KeyWord = "Hah";
 
             var manager = new WorkerManager(new Mock<ILogger>().Object);
 
@@ -52,7 +80,7 @@ namespace Huh.Engine.Test.Workers
             manager.IsRunning.ShouldBeFalse();
         }
 
-        [Fact]
+        [Fact(Timeout = 100)]
         public void TestChaining ()
         {
             var one = new Mock<IStepInformation>();
@@ -77,30 +105,30 @@ namespace Huh.Engine.Test.Workers
 
             var manager = new WorkerManager(new Mock<ILogger>().Object);
 
+            var final = new ResultInfo();
+
             manager.StepManager.Register(one.Object);
             manager.StepManager.Register(two.Object);
             manager.StepManager.Register(three.Object);
+            manager.StepManager.Register(final);
 
             manager.TaskManager.TaskCollection.Add(new Task("AddOne", new Core.Data.Record("","", 0)));
 
             manager.Start();
 
-            // There must be a better way
-            Thread.Sleep(500);
+            while (final.Results.IsEmpty) { }
 
             manager.Stop();
 
-            var results = manager.TaskManager.TaskCollection.TakeAll();
+            final.Results.ShouldNotBeNull();
 
-            results.Count.ShouldBe(1);
+            final.Results.Count.ShouldBe(1);
 
-            ITask task = results.FirstOrDefault();
+            var results = final.Results.ToList();
 
-            task.ShouldNotBeNull();
+            var rec = final.Results.First();
 
-            task.Records.Count.ShouldBe(1);
-
-            Core.Data.Record rec = task.Records.FirstOrDefault();
+            rec.ShouldNotBeNull();
 
             Assert.Equal(rec.Content, 6);
         }
@@ -120,10 +148,10 @@ namespace Huh.Engine.Test.Workers
 
                 var newTask = (ITask)task.Clone();
 
-                newTask.KeyWord.Clear();
+                newTask.KeyWord = "";
 
                 if(!string.IsNullOrWhiteSpace(this.next))
-                    newTask.KeyWord.Enqueue(this.next);
+                    newTask.KeyWord = this.next;
 
                 var record = newTask.Records.FirstOrDefault();
                 record.ShouldNotBeNull();

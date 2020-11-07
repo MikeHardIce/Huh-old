@@ -8,7 +8,7 @@ namespace Huh.Engine.Tasks
 {
     public class Task : ITask
     {
-        public Queue<string> KeyWord { get ; set; } = new Queue<string>();
+        public string KeyWord { get ; set; }
         public long Priority { get; set; }
         public IList<Record> Records { get; set; } = new List<Record>();
 
@@ -19,13 +19,13 @@ namespace Huh.Engine.Tasks
         
         public Task (string keyWord, Record record)
         {
-            KeyWord.Enqueue(keyWord);
+            KeyWord = keyWord;
             Records.Add(record);
         }
 
         public object Clone()
             => new Task {
-                KeyWord = new Queue<string>(KeyWord)
+                KeyWord = KeyWord
                 , Priority = Priority
                 , Records = Records.Select(m => m.Copy()).ToList()
             };

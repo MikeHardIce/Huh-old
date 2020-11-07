@@ -25,7 +25,7 @@ namespace Huh.Engine.Tasks
             {
                 try 
                 {
-                        this.tasks.Add(task);
+                  this.tasks.Add(task);
                 }
                 catch (Exception)
                 {
@@ -41,7 +41,7 @@ namespace Huh.Engine.Tasks
             => Add(collection.TakeAll().OrderByDescending(m => m.Priority).ToList());
             
         public ITask TakeHighestPriorityTask(string keyword)
-            => TakeTask(m => m.Where(by => by.KeyWord.Peek().Equals(keyword, StringComparison.InvariantCultureIgnoreCase))
+            => TakeTask(m => m.Where(by => by.KeyWord.Equals(keyword, StringComparison.InvariantCultureIgnoreCase))
                     .OrderByDescending(by => by.Priority).FirstOrDefault());
 
         public ITask TakeHighestPriorityTask()

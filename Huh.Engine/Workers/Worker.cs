@@ -38,52 +38,35 @@ namespace Huh.Engine.Workers
             if(!this.isExecuting)
             {
                 this.isExecuting = true;
-
-                var keyword = "";
                 
-                try
-                {
-                    keyword = task.KeyWord.Dequeue();
-                }
-                catch(InvalidOperationException)
-                {
-                    this.logger.LogInformation($"Task does not have a keyword. Skipping task ...");
-                    return;
-                }
-                
-
                 this.logger.LogInformation($"Start prosessing task \"{task.KeyWord}\"");
 
-                var steps   = this.stepManager.GetStepsFor(keyword);
+                var steps   = this.stepManager.GetStepsFor(task.KeyWord);
 
                 if(steps.Count < 1)
                 {
                     //TODO: Have an option to use to the next keyword???
-                    this.logger.LogWarning($"No suitable steps found for keyword \"{keyword}\"");
+                    this.logger.LogWarning($"No suitable steps found for keyword \"{task.KeyWord}\"");
                     return;
                 }
 
-                this.countdown = new CountdownEvent(steps.Count);
+                var allSteps = steps.SelectMany(m => m.CreateSteps()).ToList();
+                this.countdown = new CountdownEvent(allSteps.Count);
 
                 System.Threading.Tasks.Task.Factory.StartNew(() => {
 
                     this.countdown.Wait();
                     this.isExecuting = false;
-                    this.logger.LogInformation($"Task \"{keyword}\" completed");
+                    this.logger.LogInformation($"Task \"{task.KeyWord}\" completed");
                 });
 
-                steps.ToList().ForEach(m => {
-                    System.Threading.Tasks.Task.Factory.StartNew(() => {
-                        //sequentially process steps associated to the same StepInfo
-                        m.CreateSteps().ToList().ForEach(step => {
-                            // in theory the condition could modify the task,
-                            if(step.Condition(task))
-                                this.createdTasks.Consume(step.Process((ITask)task.Clone()));  
-                        });
-                        
-                        this.countdown.Signal();
-                    }, cancelationToken);
-                });
+                allSteps.ForEach(step => System.Threading.Tasks.Task.Factory.StartNew(() => {
+                    // in theory the condition could modify the task,
+                    if(step.Condition(task))
+                        this.createdTasks.Consume(step.Process((ITask)task.Clone()));  
+                    
+                    this.countdown.Signal();
+                }, cancelationToken));
             }              
         }
     }

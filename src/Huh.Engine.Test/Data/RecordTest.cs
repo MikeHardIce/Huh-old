@@ -1,6 +1,6 @@
 
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Huh.Engine.Test.Data
 {
@@ -8,14 +8,14 @@ namespace Huh.Engine.Test.Data
     {
         public RecordTest() {}
 
-        [Fact]
+        [Test]
         public void TestCopy ()
         {
             var rec = new Core.Data.Record("bla", "muh", 100);
 
             var copy = rec.Copy();
             
-            Assert.IsType<long>(copy.Content);
+            Assert.That(copy.Content == 100);
 
             copy.Key.ShouldBe("bla");
             copy.ContentHint.ShouldBe("muh");

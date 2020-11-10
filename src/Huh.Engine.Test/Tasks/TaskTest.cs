@@ -1,7 +1,7 @@
 
 using Huh.Engine.Tasks;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Huh.Engine.Test.Tasks
 {
@@ -12,7 +12,7 @@ namespace Huh.Engine.Test.Tasks
 
         }
 
-        [Fact]
+        [Test]
         public void TestCopy ()
         {
             var task = new Task("Hello", new Core.Data.Record("blub", "nothing", 42));

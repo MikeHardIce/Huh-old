@@ -5,8 +5,8 @@ using Huh.Core.Data;
 using Huh.Core.Tasks;
 using Huh.Engine.Tasks;
 using Moq;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Huh.Engine.Test.Tasks
 {
@@ -18,7 +18,7 @@ namespace Huh.Engine.Test.Tasks
             this.taskCollection = new TaskCollection();
         }
 
-        [Fact]
+        [Test]
         public void TestAdd ()
         {
             this.taskCollection.Add(CreateTask("abc", 3));
@@ -27,13 +27,13 @@ namespace Huh.Engine.Test.Tasks
 
             returnedTask.KeyWord.ShouldBe("abc");
             returnedTask.Priority.ShouldBe(3);
-            Assert.Equal(returnedTask.Records.FirstOrDefault().Content, "bla");
+            Assert.AreEqual(returnedTask.Records.FirstOrDefault().Content, "bla");
             returnedTask.Records.FirstOrDefault().Key.ShouldBe("name");
 
             this.taskCollection.TakeHighestPriorityTask().ShouldBeNull();
         }
 
-        [Fact]
+        [Test]
         public void TestTakeAll ()
         {
             var expected = new List<ITask> 
@@ -55,7 +55,7 @@ namespace Huh.Engine.Test.Tasks
             result.Count.ShouldBe(expected.Count);
         }
 
-        [Fact]
+        [Test]
         public void TestPriority ()
         {
             var tasks = new List<ITask> 

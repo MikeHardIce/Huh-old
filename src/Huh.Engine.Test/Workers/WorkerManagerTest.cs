@@ -1,9 +1,6 @@
-
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Huh.Core.Data;
 using Huh.Core.Steps;
 using Huh.Core.Tasks;
 using Huh.Engine.Steps;
@@ -11,8 +8,8 @@ using Huh.Engine.Tasks;
 using Huh.Engine.Workers;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NUnit.Framework;
 using Shouldly;
-using Xunit;
 
 namespace Huh.Engine.Test.Workers 
 {
@@ -23,7 +20,7 @@ namespace Huh.Engine.Test.Workers
             
         }
 
-        [Fact(Timeout = 10)]
+        [Test]
         public void TestResult ()
         {
             var stepInfo = new Mock<IStepInformation>();
@@ -50,7 +47,7 @@ namespace Huh.Engine.Test.Workers
             final.Results.First().ContentHint.ShouldBe("Hello");
         }
 
-        [Fact]
+        [Test]
         public void TestStartStop ()
         {
             var stepInfo = new Mock<IStepInformation>();
@@ -79,7 +76,7 @@ namespace Huh.Engine.Test.Workers
             manager.IsRunning.ShouldBeFalse();
         }
 
-        [Fact(Timeout = 10)]
+        [Test, MaxTime(500)]
         public void TestChaining ()
         {
             var one = new Mock<IStepInformation>();
@@ -129,7 +126,7 @@ namespace Huh.Engine.Test.Workers
 
             rec.ShouldNotBeNull();
 
-            Assert.Equal(rec.Content, 6);
+            Assert.AreEqual(rec.Content, 6);
         }
 
         public class Step : IStep

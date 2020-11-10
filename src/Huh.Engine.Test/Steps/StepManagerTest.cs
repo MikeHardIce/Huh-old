@@ -1,17 +1,20 @@
 using Huh.Engine.Steps;
 using Huh.Core.Steps;
-using Xunit;
 using Moq;
 using System.Collections.Generic;
 using Shouldly;
 using System.Linq;
+using NUnit.Framework;
 
 namespace Huh.Engine.Test.Steps
 {
     public class StepManagerTest
     {
-        private readonly StepManager stepManager;
-        public StepManagerTest ()
+        private StepManager stepManager;
+
+
+        [SetUp]
+        public void SetUp ()
         {
             this.stepManager = new StepManager();
 
@@ -21,7 +24,7 @@ namespace Huh.Engine.Test.Steps
             this.stepManager.Register(stepInfo.Object);
         }
 
-        [Fact]
+        [Test]
         public void TestBasicRegistration ()
         {   
             IList<IStepInformation> steps = this.stepManager.GetStepsFor("abc");
@@ -43,7 +46,7 @@ namespace Huh.Engine.Test.Steps
             this.stepManager.ListSteps().Count.ShouldBe(0);
         }
 
-        [Fact]
+        [Test]
         public void TestEnablingDisablingStep ()
         {
             this.stepManager.ListSteps().Any(m => m.enabled).ShouldBeFalse();

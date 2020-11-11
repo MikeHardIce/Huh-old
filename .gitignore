@@ -2,6 +2,7 @@
 *.*~
 project.lock.json
 .DS_Store
+.db
 *.pyc
 
 # Visual Studio Code
@@ -33,3 +34,4 @@ msbuild.wrn
 
 # cake
 tools/
+

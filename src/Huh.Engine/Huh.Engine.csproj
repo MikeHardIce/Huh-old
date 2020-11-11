@@ -5,7 +5,7 @@
     <PackageReference Include="Huh.Core" Version="0.0.1-alpha" />
   </ItemGroup>
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5</TargetFramework>
     <id>Huh.Engine</id>
     <version>0.0.1-alpha1</version>
     <authors>OgreBelly</authors>

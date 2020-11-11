@@ -124,8 +124,6 @@ namespace Huh.Engine.Test.Workers
 
             var rec = final.Results.First();
 
-            rec.ShouldNotBeNull();
-
             Assert.AreEqual(rec.Content, 6);
         }
 
@@ -150,7 +148,7 @@ namespace Huh.Engine.Test.Workers
                     newTask.KeyWord = this.next;
 
                 var record = newTask.Records.FirstOrDefault();
-                record.ShouldNotBeNull();
+
                 newTask.Records.Clear();
 
                 newTask.Records.Add(new Core.Data.Record(record.Key, record.ContentHint, record.Content + this.add));

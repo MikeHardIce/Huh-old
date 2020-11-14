@@ -2,7 +2,7 @@
 *.*~
 project.lock.json
 .DS_Store
-.db
+*.db
 *.pyc
 
 # Visual Studio Code

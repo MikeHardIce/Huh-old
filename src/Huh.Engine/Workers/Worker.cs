@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Huh.Engine.Workers
 {
-    public class Worker : IWorker
+    public class Worker : IWorker, IDisposable
     {
         private readonly IStepManager<IStepInformation> stepManager;
 
@@ -35,7 +35,7 @@ namespace Huh.Engine.Workers
         }
         public void Execute(ITask task, CancellationToken cancelationToken)
         {
-            if(!this.isExecuting)
+            if(!this.isExecuting && !cancelationToken.IsCancellationRequested)
             {
                 this.isExecuting = true;
                 
@@ -52,22 +52,36 @@ namespace Huh.Engine.Workers
 
                 var allSteps = steps.SelectMany(m => m.CreateSteps()).ToList();
                 this.countdown = new CountdownEvent(allSteps.Count);
-
+                Console.WriteLine("Signals: " + allSteps.Count);
                 System.Threading.Tasks.Task.Factory.StartNew(() => {
 
                     this.countdown.Wait();
                     this.isExecuting = false;
                     this.logger.LogInformation($"Task \"{task.KeyWord}\" completed");
-                });
+                }, cancelationToken);
 
                 allSteps.ForEach(step => System.Threading.Tasks.Task.Factory.StartNew(() => {
                     // in theory the condition could modify the task,
-                    if(step.Condition(task))
-                        this.createdTasks.Consume(step.Process((ITask)task.Clone()));  
-                    
-                    this.countdown.Signal();
+                    try
+                    {
+                        if(step.Condition(task) && !cancelationToken.IsCancellationRequested)
+                        {
+                            this.logger.LogInformation($"Process {task.KeyWord} with {task.Records.Count} records.");
+                            this.createdTasks.Consume(step.Process((ITask)task.Clone(), cancelationToken));
+                        }
+                    }
+                    finally 
+                    {
+                        this.countdown.Signal();
+                        Console.WriteLine("Signal");
+                    }
                 }, cancelationToken));
             }              
         }
+
+    public void Dispose()
+    {
+      
     }
+  }
 }

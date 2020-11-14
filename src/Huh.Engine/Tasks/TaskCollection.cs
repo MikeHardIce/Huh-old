@@ -11,11 +11,16 @@ namespace Huh.Engine.Tasks
         //TODO: Find a better collection, keyword search and ordering will be super slow
         // when the collection gets large
         private List<ITask> tasks;
-
-        public bool Empty => this.tasks.Count < 1;
-
         private object LockGetTask = new object();
 
+        public bool Empty  {
+          get {
+            lock (this.LockGetTask)
+              return this.tasks.Count < 1;
+          } 
+        }
+
+        
         public TaskCollection ()
             => this.tasks = new List<ITask>();
         
@@ -51,9 +56,12 @@ namespace Huh.Engine.Tasks
         {
             lock(LockGetTask)
             {
-                var collection = this.tasks;
+                var collection = new List<ITask>();
+                
+                this.tasks.ForEach(m => collection.Add((ITask)m.Clone()));
+                //this.tasks;
 
-                this.tasks = new List<ITask>();
+                this.tasks.Clear();
 
                 return collection;
             }

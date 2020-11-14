@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Huh.Core.Data;
 using Huh.Core.Steps;
 using Huh.Core.Tasks;
@@ -9,15 +10,18 @@ namespace Huh.Engine.Test.Workers.Steps
 {
     public class SourceFileDiscovery : IStep
     {
-        public ITaskCollection Process(ITask task)
+        public ITaskCollection Process(ITask task, CancellationToken cancellationToken)
         {
             var tasks = new TaskCollection();
 
-            string path = task.Records.Where(m => m.Key == "path").Select(m => m.Content).FirstOrDefault();
-            string filetype = task.Records.Where(m => m.Key == "filetype").Select(m => m.Content).FirstOrDefault();
+            var path = task.Records.Where(m => m.Key == "path").Select(m => m.Content as string).First();
+            var filetype = task.Records.Where(m => m.Key == "filetype").Select(m => m.Content as string).First();
 
             foreach(string directory in Directory.EnumerateDirectories(path))
             {
+                if(cancellationToken.IsCancellationRequested)
+                  return tasks;
+
                 var dirTask = new Task();
 
                 dirTask.KeyWord = "SourceFileDiscovery";
@@ -29,6 +33,9 @@ namespace Huh.Engine.Test.Workers.Steps
 
             foreach(string file in Directory.EnumerateFiles(path, $"*.{filetype}"))
             {
+                if(cancellationToken.IsCancellationRequested)
+                  return tasks;
+
                 tasks.Add(new Task("", new Record { Key = "sourcefile", Content = file}));
             }
 

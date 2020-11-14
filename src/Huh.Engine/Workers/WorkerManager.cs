@@ -46,22 +46,35 @@ namespace Huh.Engine.Workers
             this.workerTokenSouce   = new CancellationTokenSource();
 
             this.logger             = logger;
+
+            ThreadPool.GetAvailableThreads(out int available, out int availableIO);
+            this.logger.LogInformation($"Available Threads: {available}, IO: {availableIO}");
+
+            ThreadPool.GetMinThreads(out int minAvailable, out int minIO);
+
+            this.logger.LogInformation($"Min Available Threads: {minAvailable}, IO: {minIO}");
+
+            ThreadPool.GetMaxThreads(out int maxAvailable, out int maxIO);
+            this.logger.LogInformation($"Max Available Threads: {maxAvailable}, IO: {maxIO}");
         }
-        
+
+        ~WorkerManager ()
+        {
+           Console.WriteLine("Destruct");
+        }
+
+        public void Reset ()
+        {
+            if(!this.isRunning)
+            {
+               this.workerTokenSouce = new CancellationTokenSource();
+               this.managerTokenSource = new CancellationTokenSource();
+            }
+        }        
         public void Start()
         {
             if(!this.isRunning)
             {
-                if(this.workerTokenSouce.IsCancellationRequested)
-                {
-                    this.workerTokenSouce = new CancellationTokenSource();
-                }
-
-                if(this.managerTokenSource.IsCancellationRequested)
-                {
-                    this.managerTokenSource = new CancellationTokenSource();
-                }
-
                 Run();
             }
         }
@@ -71,21 +84,33 @@ namespace Huh.Engine.Workers
             if(!this.isRunning)
             {
                 this.isRunning = true;
-                System.Threading.Tasks.Task.Factory.StartNew(() => {
-
-                while(this.isRunning)
-                    ManageTasks();
-
-                }, this.managerTokenSource.Token);
+                
+                  System.Threading.Tasks.Task.Factory.StartNew(() => {
+                  Console.WriteLine("--START MANAGER RUN--");
+                  try 
+                  {
+                    while(this.isRunning && !this.managerTokenSource.Token.IsCancellationRequested)
+                    {
+                        ManageTasks();
+                        Thread.Sleep(100);
+                    }
+                  }
+                  finally 
+                  {
+                    Console.WriteLine("--END MANAGER RUN--");
+                  }
+                }, this.managerTokenSource.Token);  
             }
         }
 
         public void Stop()
         {
             this.isRunning = false;
-            
-            this.workerTokenSouce.Cancel();
             this.managerTokenSource.Cancel();
+            this.workerTokenSouce.Cancel();
+            
+
+            this.workers.Clear();
         }
 
         public void StopWorkingOnNewTasks()
@@ -94,6 +119,7 @@ namespace Huh.Engine.Workers
 
         private void ManageTasks()
         {
+            Console.WriteLine("ManageTasks BEGIN");
             AssignTasksToIdleWorkers();
             
             CreateNewWorkerIfNeeded();
@@ -101,11 +127,13 @@ namespace Huh.Engine.Workers
             ConsumeCreatedTasksOfAllWorkers();
 
             RemoveIdleWorkers();
+            Console.WriteLine("ManageTasks END");
         }
 
         private void CreateNewWorkerIfNeeded ()
         {
             if(!this.taskManager.TaskCollection.Empty
+                    && !this.managerTokenSource.Token.IsCancellationRequested
                     && CurrentWorker < MaxWorker)
             {
                 var worker = new Worker(this.stepManager, this.logger);
@@ -117,10 +145,19 @@ namespace Huh.Engine.Workers
         }
 
         private void AssignTasksToIdleWorkers ()
-            => this.workers.Where(m => !m.Executing).ToList().ForEach(m => AssignTaskToWorker(m));
+            => this.workers.Where(m => !m.Executing).ToList().ForEach(m => {
+              if(this.managerTokenSource.Token.IsCancellationRequested)
+                return;
+
+              AssignTaskToWorker(m);
+            });
 
         private void ConsumeCreatedTasksOfAllWorkers ()
             =>  this.workers.ToList().ForEach(m => {
+
+                    if(this.managerTokenSource.Token.IsCancellationRequested)
+                      return;
+
                     this.taskManager.TaskCollection.Consume(m.CreatedTasks);
                 });
     
@@ -130,6 +167,9 @@ namespace Huh.Engine.Workers
 
             toBeRemoved.ForEach(m => 
             {
+                if(this.managerTokenSource.Token.IsCancellationRequested)
+                  return;
+
                 // Since meanwhile, some tasks could have become idle
                 this.taskManager.TaskCollection.Consume(m.CreatedTasks);
                 this.workers.Remove(m);
@@ -140,8 +180,8 @@ namespace Huh.Engine.Workers
         {
             ITask task = this.taskManager.TaskCollection.TakeHighestPriorityTask();
 
-            if(task != null)
+            if(task != null && !this.workerTokenSouce.Token.IsCancellationRequested)
               worker.Execute(task, this.workerTokenSouce.Token);
         }
-    }
+  }
 }

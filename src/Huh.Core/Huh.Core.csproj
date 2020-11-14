@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net5</TargetFramework>
     <id>Huh.Core</id>
-    <version>0.0.1-alpha</version>
+    <version>0.0.1-alpha1</version>
     <authors>OgreBelly</authors>
     <owners>OgreBelly</owners>
     <projectUrl>https://github.com/OgreBelly/Huh</projectUrl>

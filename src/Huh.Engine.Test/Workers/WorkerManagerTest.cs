@@ -76,7 +76,7 @@ namespace Huh.Engine.Test.Workers
             manager.IsRunning.ShouldBeFalse();
         }
 
-        [Test, MaxTime(500)]
+        [Test, MaxTime(1500)]
         public void TestChaining ()
         {
             var one = new Mock<IStepInformation>();
@@ -136,7 +136,7 @@ namespace Huh.Engine.Test.Workers
                 this.add = add;
                 this.next = next;
             }
-            public ITaskCollection Process(ITask task)
+            public ITaskCollection Process(ITask task, CancellationToken token)
             {
                 var collection = new TaskCollection();
 
